@@ -96,7 +96,7 @@ const numberWithSeperator = (num,sep) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
 }
 
-const THBText = (money) => {
+const BahtText = (money) => {
   const cleanedMoney = MoneyLaundering(money);
   if (!IsMoneyValidate(cleanedMoney)) return MoneyInvalid(money)
   const [moneyFull, moneyInt, moneyFrac] = splitIntFrac(cleanedMoney);
@@ -104,6 +104,6 @@ const THBText = (money) => {
 };
 
 while (true) {
-    let ans = THBText(prompt("Enter a number"))
+    let ans = BahtText(prompt("Enter a number"))
     console.log(ans)
 }
