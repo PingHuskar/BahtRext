@@ -5,6 +5,7 @@
 1. BahtText in MS Excel not Support High Value
    - It's working on smaller digits
    - [บทความอธิบายเกี่ยวกับไวยากรณ์ของสูตรและการใช้ฟังก์ชัน BAHTTEXT ใน Microsoft Excel](https://support.microsoft.com/th-th/office/bahttext-ฟังก์ชัน-bahttext-5ba4d0b4-abd3-4325-8d22-7a92d59aab9c)
+   - also in [Sheets](https://www.google.com/sheets/about/)<Google Sheets>
 2. [Thai Baht Text JS](https://www.npmjs.com/package/thai-baht-text)
    - THBText(1462207924791968324790.11) -> "หนึ่งบาทสี่สิบหกสตางค์"
 3. This Repo will Solve Those Problems
@@ -12,7 +13,8 @@
 ## Library & Development Tools
 
 ### Available Language
-- JS
+- JS<JavaScript>
+  - TS<TypeScript>
 
 ### Coming Soon
 - Python
