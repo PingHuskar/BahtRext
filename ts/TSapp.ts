@@ -104,7 +104,7 @@ let BahtText = (money: string) => {
   let cleanedMoney: string = MoneyLaundering(money);
   if (!IsMoneyValidate(cleanedMoney)) return MoneyInvalid(money)
   let [moneyFull, moneyInt, moneyFrac] = splitIntFrac(cleanedMoney);
-  return `${numberWithSeperator(money,",")} อ่านว่า "${PrintBaht(moneyInt)}${BAHT}${PrintSatangs(moneyFrac)}"`;
+  return `${numberWithSeperator(moneyFull,",")} อ่านว่า "${PrintBaht(moneyInt)}${BAHT}${PrintSatangs(moneyFrac)}"`;
 };
 
 const testcases: string[] = [

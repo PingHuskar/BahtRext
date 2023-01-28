@@ -3,6 +3,7 @@ const SPECIALTWO = `ยี่`
 const TEN = `สิบ`;
 const BAHT = `บาท`;
 const MILLION = `ล้าน`;
+const WELCOMMSG = `Enter a Number`
 
 const LAST6DIGITPATTERN = /\d{1,6}$/g;
 const splitPattern = /^(\d+)(\.\d{0,2}?)?$/;
@@ -10,11 +11,13 @@ const splitPattern = /^(\d+)(\.\d{0,2}?)?$/;
 const THAINUMBERWORDS = [`ศูนย์`,`หนึ่ง`,`สอง`,`สาม`,`สี่`,`ห้า`,`หก`,`เจ็ด`,`แปด`,`เก้า`,`สิบ`]
 const REVERSETHAIDIGITWORDS = ["แสน", "หมื่น", "พัน", "ร้อย", "สิบ", ""]
 
-const MoneyInvalid = (money) => `Your Input is Invalid Format!\nThis is Your Input : ${money}\nTry Again`;
+const MoneyInvalid = (money) => `Your Input is Invalid Format!<br>This is Your Input : ${money}<br>Try Again`;
 
 const MoneyLaundering = (money) => {
-  const removeComma = money.replace(/,/g, "");
+  const removeAnything = money.replace(/[^\d\.\,]/g,"");
+  const removeComma = money.replace(/\,/g, "");
   const removeCommaAndTrailingZeros = removeComma.replace(/^0+/g, "");
+  $("input").val(removeAnything)
   return removeCommaAndTrailingZeros;
 };
 const IsMoneyValidate = (money) => /^(\d+)(\.\d{0,2})?$/.test(money);
@@ -84,7 +87,7 @@ const SatangSecondDigit = (digit) => {
 };
 const PrintSatangs = (satangs) => {
   if (satangs === "") return "ถ้วน";
-  let satangword = `${SatangFirstDigit(satangs[0])}${SatangSecondDigit(
+  let satangword = ` ${SatangFirstDigit(satangs[0])}${SatangSecondDigit(
     satangs
   )}สตางค์`;
   return satangword;
@@ -96,18 +99,13 @@ const numberWithSeperator = (num,sep) => {
 }
 
 const BahtText = (money) => {
+  if (money === ``) return WELCOMMSG
   const cleanedMoney = MoneyLaundering(money);
   if (!IsMoneyValidate(cleanedMoney)) return MoneyInvalid(money)
   const [moneyFull, moneyInt, moneyFrac] = splitIntFrac(cleanedMoney);
-  return `${numberWithSeperator(moneyFull,",")} อ่านว่า "${PrintBaht(moneyInt)}${BAHT}${PrintSatangs(moneyFrac)}"`;
+  return `${numberWithSeperator(moneyFull,",")} อ่านว่า "${PrintBaht(moneyInt)}${BAHT}${PrintSatangs(moneyFrac)}"`.trim();
 };
-
-while (true) {
-  try {
-    let ans = BahtText(prompt("Enter a number"))
-    alert(ans)
-    console.log(ans)
-  } catch (error) {
-    console.log(`Back To The Loop`)
-  }
-}
+$("p").html(WELCOMMSG);
+$('input').keyup(function(e) {
+    $("p").html(BahtText(e.target.value));
+})
