@@ -4,7 +4,7 @@ let TEN: string = `สิบ`;
 let BAHT: string = `บาท`;
 let MILLION: string = `ล้าน`;
 
-let splitPattern: RegExp = /^(\d+)(\.\d{0,2}?)?$/;
+let SPLITPATTERN: RegExp = /^(\d*)(\.\d{0,2}0*)?$/;
 let LAST6DIGITPATTERN: RegExp = /\d{1,6}$/g;
 
 let THAINUMBERWORDS: string[] = [`ศูนย์`,`หนึ่ง`,`สอง`,`สาม`,`สี่`,`ห้า`,`หก`,`เจ็ด`,`แปด`,`เก้า`,`สิบ`]
@@ -19,12 +19,11 @@ function MoneyLaundering (money: string): string {
   return removeCommaAndTrailingZeros;
 };
 function IsMoneyValidate (money: string): boolean {
-  let validMoneyPattern: RegExp = /^(\d+)(\.\d{0,2})?$/
-  return validMoneyPattern.test(money)
+  return SPLITPATTERN.test(money)
 }
 
 function splitIntFrac (money: string): string[] {
-  let match: RegExpMatchArray | null = money.match(splitPattern);
+  let match: RegExpMatchArray | null = money.match(SPLITPATTERN);
   let [moneyFull, moneyInt, moneyFrac] = match!;
   moneyFrac === undefined
     ? (moneyFrac = "")
@@ -62,6 +61,7 @@ let hundredThousandToOne = (digits: string) => {
 let LeandingEdToOne = (money: string) => money.replace(/^เอ็ด(?=(ล้าน)+)/,`หนึ่ง`)
 
 let PrintBaht = (money: string) => {
+  if (!money) return ``
   let newMoney: string[] = [];
   let f6 = true
   while (money != ``) {
@@ -73,7 +73,7 @@ let PrintBaht = (money: string) => {
     money = money.replace(LAST6DIGITPATTERN, "");
   }
   let cleanLeadingEd = LeandingEdToOne(newMoney.reverse().join(""))
-  return cleanLeadingEd;
+  return `${cleanLeadingEd}${BAHT}`;
 };
 
 let SatangFirstDigit = (digit: string) => {
@@ -88,23 +88,26 @@ let SatangSecondDigit = (digit: string) => {
   return `${THAINUMBERWORDS[parseInt(digit[1])]}`;
 };
 let PrintSatangs = (satangs: string) => {
-  if (satangs === "") return "ถ้วน";
+  if (satangs.match(/^0*$/)) return "ถ้วน";
   let satangword: string = `${SatangFirstDigit(satangs[0])}${SatangSecondDigit(
     satangs
   )}สตางค์`;
   return satangword;
 };
 
-let numberWithSeperator = (num: string,sep: string) => {
-    // https://stackoverflow.com/a/2901298/13237580
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
-}
+// https://www.freecodecamp.org/news/how-to-format-number-as-currency-in-javascript-one-line-of-code/
+let THB: Intl.NumberFormat = new Intl.NumberFormat('th-TH', {
+  style: 'currency',
+  currency: 'THB',
+});
 
 let BahtText = (money: string) => {
+  if (!money) return ``
   let cleanedMoney: string = MoneyLaundering(money);
-  if (!IsMoneyValidate(cleanedMoney)) return MoneyInvalid(money)
+  if (!IsMoneyValidate(cleanedMoney) || money === `.`) return MoneyInvalid(money)
   let [moneyFull, moneyInt, moneyFrac] = splitIntFrac(cleanedMoney);
-  return `${numberWithSeperator(moneyFull,",")} อ่านว่า "${PrintBaht(moneyInt)}${BAHT}${PrintSatangs(moneyFrac)}"`;
+  if (moneyFull.match(/^(0*)(\.0*)?$/)) return `${THAINUMBERWORDS[0]}${BAHT}ถ้วน`
+  return `${THB.format(parseFloat(moneyFull))} อ่านว่า "${PrintBaht(moneyInt)}${PrintSatangs(moneyFrac)}"`;
 };
 
 const testcases: string[] = [
@@ -128,6 +131,13 @@ const testcases: string[] = [
   "11111.11",
   "1111.11",
   "111.11",
+  "0.123",
+  "0.12",
+  "000.23",
+  ".12",
+  "000.01",
+  "2.0",
+  "01.0",
 ];
 
 for (let testcase of testcases) {

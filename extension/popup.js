@@ -1,3 +1,4 @@
+
 const SPECIALONE = `เอ็ด`
 const SPECIALTWO = `ยี่`
 const TEN = `สิบ`;
@@ -6,7 +7,7 @@ const MILLION = `ล้าน`;
 const WELCOMMSG = `Enter a Number`
 
 const LAST6DIGITPATTERN = /\d{1,6}$/g;
-const splitPattern = /^(\d+)(\.\d{0,2}?)?$/;
+const SPLITPATTERN = /^(\d*)(\.\d{0,2}0*)?$/;
 
 const THAINUMBERWORDS = [`ศูนย์`,`หนึ่ง`,`สอง`,`สาม`,`สี่`,`ห้า`,`หก`,`เจ็ด`,`แปด`,`เก้า`,`สิบ`]
 const REVERSETHAIDIGITWORDS = ["แสน", "หมื่น", "พัน", "ร้อย", "สิบ", ""]
@@ -20,9 +21,9 @@ const MoneyLaundering = (money) => {
   $("input").val(removeAnything)
   return removeCommaAndTrailingZeros;
 };
-const IsMoneyValidate = (money) => /^(\d+)(\.\d{0,2})?$/.test(money);
+const IsMoneyValidate = (money) => SPLITPATTERN.test(money);
 const splitIntFrac = (money) => {
-  const match = money.match(splitPattern);
+  const match = money.match(SPLITPATTERN);
   let [moneyFull, moneyInt, moneyFrac] = match;
   moneyFrac === undefined
     ? (moneyFrac = "")
@@ -60,6 +61,7 @@ const hundredThousandToOne = (digits) => {
 const LeandingEdToOne = (money) => money.replace(/^เอ็ด(?=(ล้าน)+)/,`หนึ่ง`)
 
 const PrintBaht = (money) => {
+  if (!money) return ``
   let newMoney = [];
   let f6 = true
   while (money != ``) {
@@ -71,7 +73,7 @@ const PrintBaht = (money) => {
     money = money.replace(LAST6DIGITPATTERN, "");
   }
   const cleanLeadingEd = LeandingEdToOne(newMoney.reverse().join(""))
-  return cleanLeadingEd;
+  return `${cleanLeadingEd}${BAHT}`;
 };
 
 const SatangFirstDigit = (digit) => {
@@ -86,25 +88,27 @@ const SatangSecondDigit = (digit) => {
   return `${THAINUMBERWORDS[parseInt(digit[1])]}`;
 };
 const PrintSatangs = (satangs) => {
-  if (satangs === "") return "ถ้วน";
-  let satangword = ` ${SatangFirstDigit(satangs[0])}${SatangSecondDigit(
+  if (satangs.match(/^0*$/)) return "ถ้วน";
+  let satangword = `${SatangFirstDigit(satangs[0])}${SatangSecondDigit(
     satangs
   )}สตางค์`;
   return satangword;
 };
 
-const numberWithSeperator = (num,sep) => {
-    // https://stackoverflow.com/a/2901298/13237580
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
-}
+let THB = new Intl.NumberFormat('th-TH', {
+  style: 'currency',
+  currency: 'THB',
+});
 
 const BahtText = (money) => {
-  if (money === ``) return WELCOMMSG
+  if (!money) return WELCOMMSG
   const cleanedMoney = MoneyLaundering(money);
-  if (!IsMoneyValidate(cleanedMoney)) return MoneyInvalid(money)
+  if (!IsMoneyValidate(cleanedMoney) || money === `.`) return MoneyInvalid(money)
   const [moneyFull, moneyInt, moneyFrac] = splitIntFrac(cleanedMoney);
-  return `${numberWithSeperator(moneyFull,",")} อ่านว่า "${PrintBaht(moneyInt)}${BAHT}${PrintSatangs(moneyFrac)}"`.trim();
+  if (moneyFull.match(/^(0*)(\.0*)?$/)) return `${THAINUMBERWORDS[0]}${BAHT}ถ้วน`
+  return `${THB.format(moneyFull)} อ่านว่า "${PrintBaht(moneyInt)}${PrintSatangs(moneyFrac)}"`;
 };
+
 $("p").html(WELCOMMSG);
 $('input').keyup(function(e) {
     $("p").html(BahtText(e.target.value));

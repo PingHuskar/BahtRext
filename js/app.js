@@ -5,7 +5,7 @@ const BAHT = `บาท`;
 const MILLION = `ล้าน`;
 
 const LAST6DIGITPATTERN = /\d{1,6}$/g;
-const splitPattern = /^(\d+)(\.\d{0,2}?)?$/;
+const SPLITPATTERN = /^(\d*)(\.\d{0,2}0*)?$/;
 
 const THAINUMBERWORDS = [`ศูนย์`,`หนึ่ง`,`สอง`,`สาม`,`สี่`,`ห้า`,`หก`,`เจ็ด`,`แปด`,`เก้า`,`สิบ`]
 const REVERSETHAIDIGITWORDS = ["แสน", "หมื่น", "พัน", "ร้อย", "สิบ", ""]
@@ -17,9 +17,9 @@ const MoneyLaundering = (money) => {
   const removeCommaAndTrailingZeros = removeComma.replace(/^0+/g, "");
   return removeCommaAndTrailingZeros;
 };
-const IsMoneyValidate = (money) => /^(\d+)(\.\d{0,2})?$/.test(money);
+const IsMoneyValidate = (money) => SPLITPATTERN.test(money);
 const splitIntFrac = (money) => {
-  const match = money.match(splitPattern);
+  const match = money.match(SPLITPATTERN);
   let [moneyFull, moneyInt, moneyFrac] = match;
   moneyFrac === undefined
     ? (moneyFrac = "")
@@ -57,6 +57,7 @@ const hundredThousandToOne = (digits) => {
 const LeandingEdToOne = (money) => money.replace(/^เอ็ด(?=(ล้าน)+)/,`หนึ่ง`)
 
 const PrintBaht = (money) => {
+  if (!money) return `` 
   let newMoney = [];
   let f6 = true
   while (money != ``) {
@@ -68,7 +69,7 @@ const PrintBaht = (money) => {
     money = money.replace(LAST6DIGITPATTERN, "");
   }
   const cleanLeadingEd = LeandingEdToOne(newMoney.reverse().join(""))
-  return cleanLeadingEd;
+  return `${cleanLeadingEd}${BAHT}`;
 };
 
 const SatangFirstDigit = (digit) => {
@@ -77,37 +78,42 @@ const SatangFirstDigit = (digit) => {
   if (digit == 2) return `${SPECIALTWO}${TEN}`;
   return `${THAINUMBERWORDS[parseInt(digit)]}${TEN}`;
 };
+
 const SatangSecondDigit = (digit) => {
   if (digit[1] === undefined || digit[1] === "0") return "";
   if (digit[0] !== "0" && digit[1] === "1") return SPECIALONE;
   return `${THAINUMBERWORDS[parseInt(digit[1])]}`;
 };
+
 const PrintSatangs = (satangs) => {
-  if (satangs === "") return "ถ้วน";
+  if (satangs.match(/^0*$/)) return "ถ้วน";
   let satangword = `${SatangFirstDigit(satangs[0])}${SatangSecondDigit(
     satangs
   )}สตางค์`;
   return satangword;
 };
 
-const numberWithSeperator = (num,sep) => {
-    // https://stackoverflow.com/a/2901298/13237580
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sep);
-}
+let THB = new Intl.NumberFormat('th-TH', {
+  style: 'currency',
+  currency: 'THB',
+});
 
 const BahtText = (money) => {
+  if (!money) return ``
   const cleanedMoney = MoneyLaundering(money);
-  if (!IsMoneyValidate(cleanedMoney)) return MoneyInvalid(money)
+  if (!IsMoneyValidate(cleanedMoney) || money === `.`) return MoneyInvalid(money)
   const [moneyFull, moneyInt, moneyFrac] = splitIntFrac(cleanedMoney);
-  return `${numberWithSeperator(moneyFull,",")} อ่านว่า "${PrintBaht(moneyInt)}${BAHT}${PrintSatangs(moneyFrac)}"`;
+  if (moneyFull.match(/^(0*)(\.0*)?$/)) return `${THAINUMBERWORDS[0]}${BAHT}ถ้วน`
+  return `${THB.format(moneyFull)} อ่านว่า "${PrintBaht(moneyInt)}${PrintSatangs(moneyFrac)}"`;
 };
 
-while (true) {
+// while (true) {
   try {
-    let ans = BahtText(prompt("Enter a number"))
-    alert(ans)
+    let ans = prompt("Enter a number")
+    // alert(ans)
     console.log(ans)
+    console.log(BahtText(ans))
   } catch (error) {
-    console.log(`Back To The Loop`)
+    console.log(error)
   }
-}
+// }
