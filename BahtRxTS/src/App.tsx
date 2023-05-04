@@ -124,6 +124,7 @@ function App() {
 
   return (
     <div className="App">
+      <h1>BahtRext</h1>
       <div className="output">
         {BahtText(num.toString())}
       </div>
@@ -140,11 +141,14 @@ function App() {
           e.preventDefault()
           navigator.clipboard.writeText(BahtText(num.toString()))
           toast.dismiss()
-          toast(`Copied ${BahtText(num.toString())}`,{
+          toast(`คัดลอก ${BahtText(num.toString())}`,{
             toastId: `copy`
           })
         }}>Copy</button>
       </div>
+      <a href="https://chrome.google.com/webstore/detail/bahtrext/fdehdmggnbjkonaiimejflhddmdgepgd" target="_blank" rel="noopener noreferrer">
+        visit chrome web store
+      </a>
       <ToastContainer limit={7} />
     </div>
   )
