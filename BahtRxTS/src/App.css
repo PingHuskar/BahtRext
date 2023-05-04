@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body, .App {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: #222;
+  color: #eee;
+}
+
+.App .output {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 50%;
+  margin-bottom: 1vh;
+}
+
+input {
+  font-weight: 600;
+  text-align: right;
+}
+
+button {
+  margin-top: 1vh;
+  font-weight: bold;
+  padding: 5px 10px;
+}/*# sourceMappingURL=App.css.map */
